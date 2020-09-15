@@ -310,19 +310,51 @@ echo
 third.Env
 echo
 echo "current object count is: $(Objects.Value)"
-echo
+
 # third.Index
 
-Objects.Create second
+# Objects.Create second
+# echo
+# second.Env
+# echo
+#
+# oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
+#
+# for e in "${test[@]}"; do
+#     echo "[$e]"
+# done
+#
+# echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
+#
+
 echo
-second.Env
+echo "- object creation speed-test. How long to create 1,000 objects?"
+
+time {
+    for ((lop=1; lop<=1000; lop++)); do
+        Objects.Create "testname_$lop"
+    done
+}
+
 echo
+Objects.Value
 
-oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
+# i7-7700k
+# - object creation speed-test. How long to create 1,000 objects?
+#
+# real    0m5.190s
+# user    0m3.348s
+# sys     0m1.969s
+#
+# 1004
 
-for e in "${test[@]}"; do
-    echo "[$e]"
-done
+# Atom D2700
+# - object creation speed-test. How long to create 1,000 objects?
+#
+# real    0m32.402s
+# user    0m8.360s
+# sys     0m24.515s
+#
+# 1004
 
-echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
-
+# Too slow! Need to work on this.
