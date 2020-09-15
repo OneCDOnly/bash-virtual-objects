@@ -12,8 +12,12 @@
 Objects.Create()
     {
 
-    [[ $(type -t "$1") = 'function' ]] && return 1
-    [[ $(type -t Objects.Value) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
+    if [[ $(type -t "$1.Index") = 'function' ]]; then
+        echo "can't create new virtual object '$1': already exists" 1>&2
+        return 1
+    fi
+
+    [[ $(type -t Objects.Index) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
 
     local public_function_name="$1"
     local safe_var_name_prefix="${public_function_name/./_}"
@@ -26,7 +30,7 @@ Objects.Create()
     _var_placeholder_switch_boolean="${safe_var_name_prefix}_switch_boolean"
     _var_placeholder_list_array="${safe_var_name_prefix}_list_array"
 
-    if [[ $(type -t Objects.Increment) = 'function' ]]; then
+    if [[ $(type -t Objects.Index) = 'function' ]]; then
         Objects.Increment
         Objects.AddItem "$public_function_name"
     fi
@@ -295,6 +299,8 @@ MyUserObj.flags.Increment by 4
 MyUserObj.flags.AddItem 'this is the first element in the array'
 MyUserObj.flags.AddItem 'and this is the second element in the array'
 
+second.Description = 'this should be the 2nd user object created but the 3rd created overall'
+
 Objects.Env
 echo
 MyUserObj.flags.Env
@@ -307,7 +313,10 @@ echo "current object count is: $(Objects.Value)"
 echo
 # third.Index
 
-# exit
+Objects.Create second
+echo
+second.Env
+echo
 
 oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
 
@@ -316,3 +325,4 @@ for e in "${test[@]}"; do
 done
 
 echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
+
