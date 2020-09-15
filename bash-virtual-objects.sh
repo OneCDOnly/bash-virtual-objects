@@ -2,7 +2,7 @@
 #
 # bash-virtual-objects.sh
 #
-# My attempt to create a few dynamic virtual "objects" containing some simple properties and methods.
+# My attempt to create a few dynamic virtual "objects" containing simple properties and methods.
 # If I can get this to work, I'll integrate it into the sherpa mini-package-manager.
 #
 # Copyright (C) 2020 OneCD [one.cd.only@gmail.com]
@@ -163,24 +163,32 @@ read -d '' object_functions << EndOfObjectDescriptors
 
         }
 
+    $public_function_name.Index()
+        {
+
+        local -i amount
+
+        if [[ -n \$1 && \$1 = '=' && \$2 = base && ${FUNCNAME[1]} = Objects.Create ]]; then
+            amount=1
+        else
+            amount=0
+        fi
+
+        $_var_placeholder_index_integer=\$amount
+
+        return 0
+
+        }
+
     $public_function_name.Init()
         {
 
-        if [[ $public_function_name = Objects ]]; then
-            declare -ig $_var_placeholder_index_integer=1
-            $_var_placeholder_description_string='this object holds metadata on every other object'
-            declare -ig $_var_placeholder_value_integer=1
-            $_var_placeholder_text_string=''
-            declare -ag $_var_placeholder_list_array+=('Objects')
-        else
-            declare -ig $_var_placeholder_index_integer=\$(Objects.Value)
-            $_var_placeholder_description_string=''
-            declare -ig $_var_placeholder_value_integer=0
-            $_var_placeholder_text_string=''
-            declare -ag $_var_placeholder_list_array+=()
-        fi
-
+        declare -ig $_var_placeholder_index_integer=\$(Objects.Value)
+        $_var_placeholder_description_string=''
+        declare -ig $_var_placeholder_value_integer=0
+        $_var_placeholder_text_string=''
         $_var_placeholder_switch_boolean=false
+        declare -ag $_var_placeholder_list_array+=()
 
         return 0
 
@@ -265,6 +273,13 @@ EndOfObjectDescriptors
 
     $public_function_name.Init
 
+    if [[ $public_function_name = Objects ]]; then
+        $public_function_name.Index = base
+        $public_function_name.Description = 'this object holds metadata on every other object'
+        $public_function_name.Value = 1
+        $public_function_name.AddItem 'Objects'
+    fi
+
     return 0
 
     }
@@ -294,7 +309,7 @@ third.Env
 echo
 echo "current object count is: $(Objects.Value)"
 echo
-
+exit
 oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
 
 for e in "${test[@]}"; do
