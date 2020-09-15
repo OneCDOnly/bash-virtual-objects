@@ -166,15 +166,12 @@ read -d '' object_functions << EndOfObjectDescriptors
     $public_function_name.Index()
         {
 
-        local -i amount
-
-        if [[ -n \$1 && \$1 = '=' && \$2 = base && ${FUNCNAME[1]} = Objects.Create ]]; then
-            amount=1
+        if [[ ${FUNCNAME[1]} = 'Objects.Create' && -n \$1 && \$1 = '=' && \$2 = 'base' ]]; then
+            $_var_placeholder_index_integer=1
         else
-            amount=0
+            # read value from internal var
+            echo \$$_var_placeholder_index_integer
         fi
-
-        $_var_placeholder_index_integer=\$amount
 
         return 0
 
@@ -309,7 +306,10 @@ third.Env
 echo
 echo "current object count is: $(Objects.Value)"
 echo
+third.Index
+
 exit
+
 oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
 
 for e in "${test[@]}"; do
@@ -317,3 +317,4 @@ for e in "${test[@]}"; do
 done
 
 echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
+
