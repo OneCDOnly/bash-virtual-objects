@@ -166,7 +166,7 @@ read -d '' object_functions << EndOfObjectDescriptors
     $public_function_name.Index()
         {
 
-        if [[ ${FUNCNAME[1]} = 'Objects.Create' && -n \$1 && \$1 = '=' && \$2 = 'base' ]]; then
+        if [[ ${FUNCNAME[1]} = 'Objects.Create' ]]; then
             $_var_placeholder_index_integer=1
         else
             # read value from internal var
@@ -271,7 +271,7 @@ EndOfObjectDescriptors
     $public_function_name.Init
 
     if [[ $public_function_name = Objects ]]; then
-        $public_function_name.Index = base
+        $public_function_name.Index
         $public_function_name.Description = 'this object holds metadata on every other object'
         $public_function_name.Value = 1
         $public_function_name.AddItem 'Objects'
