@@ -200,7 +200,16 @@ read -d '' object_functions << EndOfObjectDescriptors
 
         }
 
-    $public_function_name.ListItems()
+    $public_function_name.ExportList()
+        {
+
+        printf '%s|' "\${$_var_placeholder_list_array[@]}"
+
+        return 0
+
+        }
+
+    $public_function_name.PrintList()
         {
 
         echo "\${$_var_placeholder_list_array[*]}"
@@ -272,6 +281,8 @@ MyUserObj.flags.Text = "something to print onscreen"
 MyUserObj.flags.Description = 'holds current script flags and switches'
 MyUserObj.flags.Disable
 MyUserObj.flags.Increment by 4
+MyUserObj.flags.AddItem 'this is a test sentence'
+MyUserObj.flags.AddItem 'and a second test sentence after'
 
 Objects.Env
 echo
@@ -282,3 +293,12 @@ echo
 third.Env
 echo
 echo "current object count is: $(Objects.Value)"
+echo
+
+oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
+
+for e in "${test[@]}"; do
+    echo "[$e]"
+done
+
+echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
