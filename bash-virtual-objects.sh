@@ -289,12 +289,12 @@ Objects.Create third
 
 MyUserObj.flags.Enable
 MyUserObj.flags.Value = 10
-MyUserObj.flags.Text = "something to print onscreen"
+MyUserObj.flags.Text = 'something to print onscreen'
 MyUserObj.flags.Description = 'holds current script flags and switches'
 MyUserObj.flags.Disable
 MyUserObj.flags.Increment by 4
-MyUserObj.flags.AddItem 'this is a test sentence'
-MyUserObj.flags.AddItem 'and a second test sentence after'
+MyUserObj.flags.AddItem 'this is the first element in the array'
+MyUserObj.flags.AddItem 'and this is the second element in the array'
 
 Objects.Env
 echo
@@ -306,9 +306,9 @@ third.Env
 echo
 echo "current object count is: $(Objects.Value)"
 echo
-third.Index
+# third.Index
 
-exit
+# exit
 
 oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
 
@@ -317,4 +317,3 @@ for e in "${test[@]}"; do
 done
 
 echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
-
