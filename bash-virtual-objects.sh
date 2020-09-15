@@ -16,8 +16,7 @@ Objects.Create()
     [[ $(type -t Objects.Value) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
 
     local public_function_name="$1"
-    local unique=$RANDOM
-    local safe_var_name_prefix="${public_function_name/./_}_${unique}"
+    local safe_var_name_prefix="${public_function_name/./_}"
     local object_functions=''
 
     _var_placeholder_index_integer="${safe_var_name_prefix}_index_integer"
