@@ -23,113 +23,113 @@ Objects.Create()
     local safe_var_name_prefix="${public_function_name/./_}"
     local object_functions=''
 
-    _var_placeholder_index_integer="${safe_var_name_prefix}_index_integer"
-    _var_placeholder_description_string="${safe_var_name_prefix}_description_string"
-    _var_placeholder_value_integer="${safe_var_name_prefix}_value_integer"
-    _var_placeholder_text_string="${safe_var_name_prefix}_text_string"
-    _var_placeholder_switch_boolean="${safe_var_name_prefix}_switch_boolean"
-    _var_placeholder_list_array="${safe_var_name_prefix}_list_array"
+    _placehold_index_="${safe_var_name_prefix}_index_integer"
+    _placehold_description_="${safe_var_name_prefix}_description_string"
+    _placehold_value_="${safe_var_name_prefix}_value_integer"
+    _placehold_text_="${safe_var_name_prefix}_text_string"
+    _placehold_switch_="${safe_var_name_prefix}_switch_boolean"
+    _placeholder_array_="${safe_var_name_prefix}_list_array"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
         Objects.Increment
         Objects.AddItem "$public_function_name"
     fi
 
-read -d '' object_functions << EndOfObjectDescriptors
+object_functions="
 $public_function_name.AddItem(){
-$_var_placeholder_list_array+=("\$1")
-}
+    $_placeholder_array_+=(\"\$1\")
+    }
 $public_function_name.Clear(){
-[[ \$$_var_placeholder_switch_boolean = false ]] && return
-$_var_placeholder_switch_boolean=false
-}
+[[ \$$_placehold_switch_ = false ]] && return
+    $_placehold_switch_=false
+    }
 $public_function_name.CountItems(){
-echo "\${#$_var_placeholder_list_array[@]}"
-}
+    echo "\${#$_placeholder_array_[@]}"
+    }
 $public_function_name.Decrement(){
-if [[ -n \$1 && \$1 = 'by' ]]; then
-local temp=\$2
-$_var_placeholder_value_integer=\$(($_var_placeholder_value_integer-temp))
-else
-(($_var_placeholder_value_integer--))
-fi
-}
+    if [[ -n \$1 && \$1 = 'by' ]]; then
+        local temp=\$2
+        $_placehold_value_=\$(($_placehold_value_-temp))
+    else
+        (($_placehold_value_--))
+    fi
+    }
 $public_function_name.Description(){
-if [[ -n \$1 && \$1 = '=' ]]; then
-$_var_placeholder_description_string="\$2"
-else
-echo -n "\$$_var_placeholder_description_string"
-fi
-}
+    if [[ -n \$1 && \$1 = '=' ]]; then
+        $_placehold_description_="\$2"
+    else
+        echo -n "\$$_placehold_description_"
+    fi
+    }
 $public_function_name.Env(){
-echo "* object internal environment *"
-echo "object index: '\$$_var_placeholder_index_integer'"
-echo "object name: '$public_function_name'"
-echo "object description: '\$$_var_placeholder_description_string'"
-echo "object value: '\$$_var_placeholder_value_integer'"
-echo "object text: '\$$_var_placeholder_text_string'"
-echo "object switch: '\$$_var_placeholder_switch_boolean'"
-echo "object array: '\${$_var_placeholder_list_array[*]}'"
-}
-$public_function_name.FirstItem(){
-echo "\${$_var_placeholder_list_array[0]}"
-}
+    echo \"* object internal environment *\"
+    echo \"object index: '\$$_placehold_index_'\"
+    echo \"object name: '$public_function_name'\"
+    echo \"object description: '\$$_placehold_description_'\"
+    echo \"object value: '\$$_placehold_value_'\"
+    echo \"object text: '\$$_placehold_text_'\"
+    echo \"object switch: '\$$_placehold_switch_'\"
+    echo \"object array: '\${$_placeholder_array_[*]}'\"
+    }
 $public_function_name.Increment(){
-local -i amount
-if [[ -n \$1 && \$1 = 'by' ]]; then
-amount=\$2
-else
-amount=1
-fi
-$_var_placeholder_value_integer=\$(($_var_placeholder_value_integer+amount))
-}
-$public_function_name.Index(){
-if [[ ${FUNCNAME[1]} = 'Objects.Create' ]]; then
-$_var_placeholder_index_integer=1
-else
-echo \$$_var_placeholder_index_integer
-fi
-}
+    local -i amount
+    if [[ -n \$1 && \$1 = 'by' ]]; then
+        amount=\$2
+    else
+        amount=1
+    fi
+    $_placehold_value_=\$(($_placehold_value_+amount))
+    }
 $public_function_name.Init(){
-declare -ig $_var_placeholder_index_integer=\$(Objects.Value)
-$_var_placeholder_description_string=''
-declare -ig $_var_placeholder_value_integer=0
-$_var_placeholder_text_string=''
-$_var_placeholder_switch_boolean=false
-declare -ag $_var_placeholder_list_array+=()
-}
+    declare -ig $_placehold_index_=\$(Objects.Value)
+    $_placehold_description_=''
+    declare -ig $_placehold_value_=0
+    $_placehold_text_=''
+    $_placehold_switch_=false
+    declare -ag $_placeholder_array_+=()
+    }
 $public_function_name.IsNot(){
-[[ \$$_var_placeholder_switch_boolean = false ]]
-}
+    [[ \$$_placehold_switch_ = false ]]
+    }
 $public_function_name.IsSet(){
-[[ \$$_var_placeholder_switch_boolean = true ]]
-}
-$public_function_name.ExportList(){
-printf '%s|' "\${$_var_placeholder_list_array[@]}"
-}
-$public_function_name.PrintList(){
-echo "\${$_var_placeholder_list_array[*]}"
-}
-$public_function_name.Set(){
-[[ \$$_var_placeholder_switch_boolean = true ]] && return
-$_var_placeholder_switch_boolean=true
-}
-$public_function_name.Text(){
-if [[ -n \$1 && \$1 = '=' ]]; then
-$_var_placeholder_text_string="\$2"
-else
-echo -n "\$$_var_placeholder_text_string"
-fi
-}
-$public_function_name.Value(){
-if [[ -n \$1 && \$1 = '=' ]]; then
-$_var_placeholder_value_integer=\$2
-else
-echo \$$_var_placeholder_value_integer
-fi
-}
-EndOfObjectDescriptors
+    [[ \$$_placehold_switch_ = true ]]
+    }
+$public_function_name.FirstItem(){
+    echo \"\${$_placeholder_array_[0]}\"
+    }
 
+$public_function_name.Index(){
+    if [[ ${FUNCNAME[1]} = 'Objects.Create' ]]; then
+        $_placehold_index_=1
+    else
+        echo \$$_placehold_index_
+    fi
+    }
+$public_function_name.ExportList(){
+    printf '%s|' "\${$_placeholder_array_[@]}"
+    }
+$public_function_name.PrintList(){
+    echo \"\${$_placeholder_array_[*]}\"
+    }
+$public_function_name.Set(){
+    [[ \$$_placehold_switch_ = true ]] && return
+    $_placehold_switch_=true
+    }
+$public_function_name.Text(){
+    if [[ -n \$1 && \$1 = '=' ]]; then
+        $_placehold_text_="\$2"
+    else
+        echo -n \"\$$_placehold_text_\"
+    fi
+    }
+$public_function_name.Value(){
+    if [[ -n \$1 && \$1 = '=' ]]; then
+        $_placehold_value_=\$2
+    else
+        echo \$$_placehold_value_
+    fi
+    }
+"
     eval "$object_functions"
 
     $public_function_name.Init
@@ -147,30 +147,34 @@ EndOfObjectDescriptors
 
 # a few test commands to check operation
 
-Objects.Create MyUserObj.flags
-Objects.Create second
-Objects.Create third
+#
+# Objects.Create MyUserObj.flags
+# Objects.Create second
+# Objects.Create third
+#
+# MyUserObj.flags.Set
+# MyUserObj.flags.Value = 10
+# MyUserObj.flags.Text = 'something to print onscreen'
+# MyUserObj.flags.Description = 'holds current script flags and switches'
+# MyUserObj.flags.Clear
+# MyUserObj.flags.Increment by 4
+# MyUserObj.flags.AddItem 'this is the first element in the array'
+# MyUserObj.flags.AddItem 'and this is the second element in the array'
+#
+# second.Description = 'this should be the 2nd user object created but the 3rd created overall'
+#
+# Objects.Env
+# echo
+# MyUserObj.flags.Env
+# echo
+# second.Env
+# echo
+# third.Env
+# echo
+# echo "current object count is: $(Objects.Value)"
+# echo "first array first element is: [$(MyUserObj.flags.FirstItem)]"
+# exit
 
-MyUserObj.flags.Set
-MyUserObj.flags.Value = 10
-MyUserObj.flags.Text = 'something to print onscreen'
-MyUserObj.flags.Description = 'holds current script flags and switches'
-MyUserObj.flags.Clear
-MyUserObj.flags.Increment by 4
-MyUserObj.flags.AddItem 'this is the first element in the array'
-MyUserObj.flags.AddItem 'and this is the second element in the array'
-
-second.Description = 'this should be the 2nd user object created but the 3rd created overall'
-
-Objects.Env
-echo
-MyUserObj.flags.Env
-echo
-second.Env
-echo
-third.Env
-echo
-echo "current object count is: $(Objects.Value)"
 
 # third.Index
 
@@ -188,7 +192,7 @@ echo "current object count is: $(Objects.Value)"
 # echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
 #
 
-echo
+# echo
 echo "How long to create 1,000 objects?"
 
 time {
@@ -196,9 +200,8 @@ time {
         Objects.Create "testname_$lop"
     done
 }
-
 echo
-Objects.Value
+echo "total objects: $(Objects.Value)"
 
 # ### speed tests ###
 # i7-7700k
@@ -240,4 +243,21 @@ Objects.Value
 #
 # 1004
 
-# Really should make that virtual code-block array persistent: generate once, then re-evaluate as required.
+# removed 'read' and put object functions directly into a variable:
+# i7-7700k
+# How long to create 1,000 objects?
+#
+# real    0m3.423s
+# user    0m2.522s
+# sys     0m1.048s
+#
+# total objects: 1001
+
+# Atom D2700
+# How long to create 1,000 objects?
+#
+# real    0m21.234s
+# user    0m7.018s
+# sys     0m14.878s
+#
+# total objects: 1001
