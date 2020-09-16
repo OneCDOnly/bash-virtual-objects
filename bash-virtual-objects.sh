@@ -31,35 +31,15 @@ Objects.Create()
     _placehold_array_="${safe_var_name_prefix}_list_array"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
-        Objects.Increment
-        Objects.AddItem "$public_function_name"
+        Objects.Value.Increment     # should integrate this into .Items.Add so it happens automatically
+        Objects.Items.Add "$public_function_name"
     fi
 
     object_functions='
-        '$public_function_name'.AddItem()
-            {
-            '$_placehold_array_'+=("$1")
-            }
-
         '$public_function_name'.Clear()
             {
             [[ '$_placehold_switch_' = false ]] && return
             '$_placehold_switch_'=false
-            }
-
-        '$public_function_name'.CountItems()
-            {
-            echo "${#'$_placehold_array_'[@]}"
-            }
-
-        '$public_function_name'.Decrement()
-            {
-            if [[ -n $1 && $1 = 'by' ]]; then
-                local temp=$2
-                '$_placehold_value_'=$(('$_placehold_value_'-temp))
-            else
-                (('$_placehold_value_'--))
-            fi
             }
 
         '$public_function_name'.Description()
@@ -86,11 +66,6 @@ Objects.Create()
         '$public_function_name'.ExportList()
             {
             printf "%s|" "${'$_placehold_array_'[@]}"
-            }
-
-        '$public_function_name'.FirstItem()
-            {
-            echo "${'$_placehold_array_'[0]}"
             }
 
         '$public_function_name'.Increment()
@@ -133,7 +108,22 @@ Objects.Create()
             [[ $'$_placehold_switch_' = true ]]
             }
 
-        '$public_function_name'.PrintList()
+        '$public_function_name'.Items.Add()
+            {
+            '$_placehold_array_'+=("$1")
+            }
+
+        '$public_function_name'.Items.Count()
+            {
+            echo "${#'$_placehold_array_'[@]}"
+            }
+
+        '$public_function_name'.Items.First()
+            {
+            echo "${'$_placehold_array_'[0]}"
+            }
+
+        '$public_function_name'.Items.Print()
             {
             echo "${'$_placehold_array_'[*]}"
             }
@@ -161,6 +151,28 @@ Objects.Create()
                 echo $'$_placehold_value_'
             fi
             }
+
+        '$public_function_name'.Value.Decrement()
+            {
+            local -i amount
+            if [[ -n $1 && $1 = 'by' ]]; then
+                amount=$2
+            else
+                amount=1
+            fi
+            '$_placehold_value_'=$(('$_placehold_value_'-amount))
+            }
+
+        '$public_function_name'.Value.Increment()
+            {
+            local -i amount
+            if [[ -n $1 && $1 = 'by' ]]; then
+                amount=$2
+            else
+                amount=1
+            fi
+            '$_placehold_value_'=$(('$_placehold_value_'+amount))
+            }
     '
     eval "$object_functions"
 
@@ -170,7 +182,7 @@ Objects.Create()
         $public_function_name.Index
         $public_function_name.Description = 'this object holds metadata on every other object'
         $public_function_name.Value = 1
-        $public_function_name.AddItem 'Objects'
+        $public_function_name.Items.Add 'Objects'
     fi
 
     return 0
@@ -188,22 +200,36 @@ MyUserObj.flags.Value = 10
 MyUserObj.flags.Text = 'something to print onscreen'
 MyUserObj.flags.Description = "this one will hold the user script's flags and switches"
 MyUserObj.flags.Clear
-MyUserObj.flags.Increment by 4
-MyUserObj.flags.AddItem 'this is the first element in the array'
-MyUserObj.flags.AddItem 'and this is the second element in the array'
+MyUserObj.flags.Value.Increment by 4
+MyUserObj.flags.Items.Add 'this is the first element in the array'
+MyUserObj.flags.Items.Add 'and this is the second element in the array'
 
 second.Description = 'this should be the 2nd user object created but the 3rd created overall'
 
-Objects.Env
-echo
 MyUserObj.flags.Env
 echo
 second.Env
 echo
 third.Env
 echo
-echo "current object count is: $(Objects.Value)"
-echo "first user object, array & first element is: [$(MyUserObj.flags.FirstItem)]"
+
+for obj in {lights,camera,lights,action}; do
+    Objects.Create "$obj"
+done
+
+lights.Description = "lighting information for this scene"
+camera.Description = "where should the camera be put?"
+action.Description = "what's going on?"
+
+# for obj in {lights,camera,action}; do
+#   "$obj".Env
+# done
+
+Objects.Env
+echo
+echo "first user object, array & first element is: [$(MyUserObj.flags.Items.First)]"
+echo "current object count is: $(Objects.Items.Count)"
+
 exit
 
 # third.Index
