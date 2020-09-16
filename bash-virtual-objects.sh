@@ -31,7 +31,6 @@ Objects.Create()
     _placehold_array_="${safe_var_name_prefix}_list_array"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
-        Objects.Value.Increment     # should integrate this into .Items.Add so it happens automatically
         Objects.Items.Add "$public_function_name"
     fi
 
@@ -90,7 +89,7 @@ Objects.Create()
 
         '$public_function_name'.Init()
             {
-            declare -ig '$_placehold_index_'=$(Objects.Value)
+            declare -ig '$_placehold_index_'=$(Objects.Items.Count)
             '$_placehold_description_'=''
             declare -ig '$_placehold_value_'=0
             '$_placehold_text_'=''
