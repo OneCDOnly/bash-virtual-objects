@@ -1,2 +1,4 @@
 # bash-virtual-objects
-making VB-type objects in BASH
+fun making VisualBasic-type objects in BASH
+
+Why? To see if I can. :)
