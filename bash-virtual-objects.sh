@@ -13,7 +13,7 @@ Objects.Create()
     {
 
     if [[ $(type -t "$1.Index") = 'function' ]]; then
-        echo "can't create new virtual object '$1': already exists" 1>&2
+        echo "unable to create new virtual object '$1': already exists" 1>&2
         return 1
     fi
 
@@ -62,22 +62,6 @@ Objects.Create()
             echo "object array: '\'\${$_placehold_array_[*]}\''"
             }
 
-        '$public_function_name'.ExportList()
-            {
-            printf "%s|" "${'$_placehold_array_'[@]}"
-            }
-
-        '$public_function_name'.Increment()
-            {
-            local -i amount
-            if [[ -n $1 && $1 = 'by' ]]; then
-                amount=$2
-            else
-                amount=1
-            fi
-            '$_placehold_value_'=$(('$_placehold_value_'+amount))
-            }
-
         '$public_function_name'.Index()
             {
             if [[ ${FUNCNAME[1]} = 'Objects.Create' ]]; then
@@ -115,6 +99,11 @@ Objects.Create()
         '$public_function_name'.Items.Count()
             {
             echo "${#'$_placehold_array_'[@]}"
+            }
+
+        '$public_function_name'.Items.Export()
+            {
+            printf "%s|" "${'$_placehold_array_'[@]}"
             }
 
         '$public_function_name'.Items.First()
@@ -212,6 +201,7 @@ echo
 third.Env
 echo
 
+# including an intentional duplicate object to check error works
 for obj in {lights,camera,lights,action}; do
     Objects.Create "$obj"
 done
@@ -238,7 +228,7 @@ exit
 # second.Env
 # echo
 #
-# oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.ExportList)); IFS="$oldIFS"
+# oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.Items.Export)); IFS="$oldIFS"
 #
 # for e in "${test[@]}"; do
 #     echo "[$e]"
