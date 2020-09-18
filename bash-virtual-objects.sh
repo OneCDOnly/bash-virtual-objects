@@ -29,6 +29,7 @@ Objects.Create()
     _placehold_text_="${safe_var_name_prefix}_text_string"
     _placehold_switch_="${safe_var_name_prefix}_switch_boolean"
     _placehold_array_="${safe_var_name_prefix}_list_array"
+    _placehold_array_pointer_="${safe_var_name_prefix}_array_index_integer"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
         Objects.Items.Add "$public_function_name"
@@ -60,6 +61,7 @@ Objects.Create()
             echo "object text: '\'\$$_placehold_text_\''"
             echo "object switch: '\'\$$_placehold_switch_\''"
             echo "object array: '\'\${$_placehold_array_[*]}\''"
+            echo "object array pointer: '\'\$$_placehold_array_pointer_\''"
             }
 
         '$public_function_name'.Index()
@@ -79,6 +81,7 @@ Objects.Create()
             '$_placehold_text_'=''
             '$_placehold_switch_'=false
             declare -ag '$_placehold_array_'+=()
+            declare -ig '$_placehold_array_pointer_'=1
             }
 
         '$public_function_name'.IsNot()
@@ -111,9 +114,30 @@ Objects.Create()
             echo "${'$_placehold_array_'[0]}"
             }
 
+        '$public_function_name'.Items.Enumerate()
+            {
+            (('$_placehold_array_pointer_'++))
+            if [[ $'$_placehold_array_pointer_' -gt ${#'$_placehold_array_'[@]} ]]; then
+                '$_placehold_array_pointer_'=1
+            fi
+            }
+
+        '$public_function_name'.Items.Pointer()
+            {
+            if [[ -n $1 && $1 = "=" ]]; then
+                if [[ $2 -gt ${#'$_placehold_array_'[@]} ]]; then
+                    '$_placehold_array_pointer_'=${#'$_placehold_array_'[@]}
+                else
+                    '$_placehold_array_pointer_'=$2
+                fi
+            else
+                echo -n $'$_placehold_array_pointer_'
+            fi
+            }
+
         '$public_function_name'.Items.Print()
             {
-            echo "${'$_placehold_array_'[*]}"
+            echo -n "${'$_placehold_array_'[(('$_placehold_array_pointer_'-1))]}"
             }
 
         '$public_function_name'.Set()
@@ -124,7 +148,7 @@ Objects.Create()
 
         '$public_function_name'.Text()
             {
-            if [[ -n $1 && $1 = '=' ]]; then
+            if [[ -n $1 && $1 = "=" ]]; then
                 '$_placehold_text_'="$2"
             else
                 echo -n "$'$_placehold_text_'"
@@ -133,17 +157,17 @@ Objects.Create()
 
         '$public_function_name'.Value()
             {
-            if [[ -n $1 && $1 = '=' ]]; then
+            if [[ -n $1 && $1 = "=" ]]; then
                 '$_placehold_value_'=$2
             else
-                echo $'$_placehold_value_'
+                echo -n $'$_placehold_value_'
             fi
             }
 
         '$public_function_name'.Value.Decrement()
             {
             local -i amount
-            if [[ -n $1 && $1 = 'by' ]]; then
+            if [[ -n $1 && $1 = "by" ]]; then
                 amount=$2
             else
                 amount=1
@@ -154,7 +178,7 @@ Objects.Create()
         '$public_function_name'.Value.Increment()
             {
             local -i amount
-            if [[ -n $1 && $1 = 'by' ]]; then
+            if [[ -n $1 && $1 = "by" ]]; then
                 amount=$2
             else
                 amount=1
@@ -189,12 +213,13 @@ MyUserObj.flags.Text = 'something to print onscreen'
 MyUserObj.flags.Description = "this one will hold the user script's flags and switches"
 MyUserObj.flags.Clear
 MyUserObj.flags.Value.Increment by 4
+MyUserObj.flags.Value.Increment
 MyUserObj.flags.Items.Add 'this is the first element in the array'
 MyUserObj.flags.Items.Add 'and this is the second element in the array'
+MyUserObj.flags.Items.Add 'finally this is the third element in the array'
 
 second.Description = 'this should be the 2nd user object created but the 3rd created overall'
 
-MyUserObj.flags.Env
 echo
 second.Env
 echo
@@ -213,28 +238,15 @@ action.Description = "what's going on?"
 # for obj in {lights,camera,action}; do
 #   "$obj".Env
 # done
-
 Objects.Env
+
 echo
 echo "first user object, array & first element is: [$(MyUserObj.flags.Items.First)]"
 echo "current object count is: $(Objects.Items.Count)"
-
-exit
-
-# third.Index
-
-# Objects.Create second
-# echo
-# second.Env
-# echo
-#
-# oldIFS=$IFS; IFS="|"; test=($(MyUserObj.flags.Items.Export)); IFS="$oldIFS"
-#
-# for e in "${test[@]}"; do
-#     echo "[$e]"
-# done
-#
-# echo "... this array has ${#test[@]} elements and the IFS is: [$IFS]"
 #
 
-# echo
+echo "$(MyUserObj.flags.Items.Print)"
+MyUserObj.flags.Items.Enumerate
+echo "$(MyUserObj.flags.Items.Print)"
+MyUserObj.flags.Items.Enumerate
+echo "$(MyUserObj.flags.Items.Print)"
