@@ -27,9 +27,10 @@ Objects.Create()
     _placehold_description_="${safe_var_name_prefix}_description_string"
     _placehold_value_="${safe_var_name_prefix}_value_integer"
     _placehold_text_="${safe_var_name_prefix}_text_string"
-    _placehold_switch_="${safe_var_name_prefix}_switch_boolean"
-    _placehold_array_="${safe_var_name_prefix}_list_array"
-    _placehold_array_pointer_="${safe_var_name_prefix}_array_index_integer"
+    _placehold_set_switch_="${safe_var_name_prefix}_set_boolean"
+    _placehold_enable_switch_="${safe_var_name_prefix}_enable_boolean"
+    _placehold_list_array_="${safe_var_name_prefix}_list_array"
+    _placehold_list_pointer_="${safe_var_name_prefix}_array_index_integer"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
         Objects.Items.Add "$public_function_name"
@@ -38,8 +39,8 @@ Objects.Create()
     object_functions='
         '$public_function_name'.Clear()
             {
-            [[ '$_placehold_switch_' = false ]] && return
-            '$_placehold_switch_'=false
+            [[ '$_placehold_set_switch_' = false ]] && return
+            '$_placehold_set_switch_'=false
             }
 
         '$public_function_name'.Description()
@@ -51,6 +52,19 @@ Objects.Create()
             fi
             }
 
+        '$public_function_name'.Disable()
+            {
+            [[ '$_placehold_enable_switch_' = false ]] && return
+            '$_placehold_enable_switch_'=false
+            }
+
+        '$public_function_name'.Enable()
+            {
+            [[ $'$_placehold_enable_switch_' = true ]] && return
+            '$_placehold_enable_switch_'=true
+            }
+
+
         '$public_function_name'.Env()
             {
             echo "* object internal environment *"
@@ -59,9 +73,10 @@ Objects.Create()
             echo "object description: '\'\$$_placehold_description_\''"
             echo "object value: '\'\$$_placehold_value_\''"
             echo "object text: '\'\$$_placehold_text_\''"
-            echo "object switch: '\'\$$_placehold_switch_\''"
-            echo "object array: '\'\${$_placehold_array_[*]}\''"
-            echo "object array pointer: '\'\$$_placehold_array_pointer_\''"
+            echo "object set: '\'\$$_placehold_set_switch_\''"
+            echo "object enable: '\'\$$_placehold_enable_switch_\''"
+            echo "object list: '\'\${$_placehold_list_array_[*]}\''"
+            echo "object list pointer: '\'\$$_placehold_list_pointer_\''"
             }
 
         '$public_function_name'.Index()
@@ -79,71 +94,82 @@ Objects.Create()
             '$_placehold_description_'=''
             declare -ig '$_placehold_value_'=0
             '$_placehold_text_'=''
-            '$_placehold_switch_'=false
-            declare -ag '$_placehold_array_'+=()
-            declare -ig '$_placehold_array_pointer_'=1
+            '$_placehold_set_switch_'=false
+            '$_placehold_enable_switch_'=false
+            declare -ag '$_placehold_list_array_'+=()
+            declare -ig '$_placehold_list_pointer_'=1
+            }
+
+        '$public_function_name'.IsDisabled()
+            {
+            [[ $'$_placehold_enable_switch_' = true ]]
+            }
+
+        '$public_function_name'.IsEnabled()
+            {
+            [[ $'$_placehold_enable_switch_' = false ]]
             }
 
         '$public_function_name'.IsNot()
             {
-            [[ $'$_placehold_switch_' = false ]]
+            [[ $'$_placehold_set_switch_' = false ]]
             }
 
         '$public_function_name'.IsSet()
             {
-            [[ $'$_placehold_switch_' = true ]]
+            [[ $'$_placehold_set_switch_' = true ]]
             }
 
         '$public_function_name'.Items.Add()
             {
-            '$_placehold_array_'+=("$1")
+            '$_placehold_list_array_'+=("$1")
             }
 
         '$public_function_name'.Items.Count()
             {
-            echo "${#'$_placehold_array_'[@]}"
+            echo "${#'$_placehold_list_array_'[@]}"
             }
 
         '$public_function_name'.Items.Export()
             {
-            printf "%s|" "${'$_placehold_array_'[@]}"
+            printf "%s|" "${'$_placehold_list_array_'[@]}"
             }
 
         '$public_function_name'.Items.First()
             {
-            echo "${'$_placehold_array_'[0]}"
+            echo "${'$_placehold_list_array_'[0]}"
             }
 
         '$public_function_name'.Items.Enumerate()
             {
-            (('$_placehold_array_pointer_'++))
-            if [[ $'$_placehold_array_pointer_' -gt ${#'$_placehold_array_'[@]} ]]; then
-                '$_placehold_array_pointer_'=1
+            (('$_placehold_list_pointer_'++))
+            if [[ $'$_placehold_list_pointer_' -gt ${#'$_placehold_list_array_'[@]} ]]; then
+                '$_placehold_list_pointer_'=1
             fi
             }
 
         '$public_function_name'.Items.Pointer()
             {
             if [[ -n $1 && $1 = "=" ]]; then
-                if [[ $2 -gt ${#'$_placehold_array_'[@]} ]]; then
-                    '$_placehold_array_pointer_'=${#'$_placehold_array_'[@]}
+                if [[ $2 -gt ${#'$_placehold_list_array_'[@]} ]]; then
+                    '$_placehold_list_pointer_'=${#'$_placehold_list_array_'[@]}
                 else
-                    '$_placehold_array_pointer_'=$2
+                    '$_placehold_list_pointer_'=$2
                 fi
             else
-                echo -n $'$_placehold_array_pointer_'
+                echo -n $'$_placehold_list_pointer_'
             fi
             }
 
         '$public_function_name'.Items.Print()
             {
-            echo -n "${'$_placehold_array_'[(('$_placehold_array_pointer_'-1))]}"
+            echo -n "${'$_placehold_list_array_'[(('$_placehold_list_pointer_'-1))]}"
             }
 
         '$public_function_name'.Set()
             {
-            [[ $'$_placehold_switch_' = true ]] && return
-            '$_placehold_switch_'=true
+            [[ $'$_placehold_set_switch_' = true ]] && return
+            '$_placehold_set_switch_'=true
             }
 
         '$public_function_name'.Text()
@@ -217,28 +243,29 @@ MyUserObj.flags.Value.Increment
 MyUserObj.flags.Items.Add 'this is the first element in the array'
 MyUserObj.flags.Items.Add 'and this is the second element in the array'
 MyUserObj.flags.Items.Add 'finally this is the third element in the array'
-
+MyUserObj.flags.Enable
 second.Description = 'this should be the 2nd user object created but the 3rd created overall'
 
-echo
-second.Env
-echo
-third.Env
-echo
+MyUserObj.flags.Env
+# echo
+# second.Env
+# echo
+# third.Env
+# echo
 
 # including an intentional duplicate object to check error works
-for obj in {lights,camera,lights,action}; do
-    Objects.Create "$obj"
-done
-
-lights.Description = "lighting information for this scene"
-camera.Description = "where should the camera be put?"
-action.Description = "what's going on?"
+# for obj in {lights,camera,lights,action}; do
+#     Objects.Create "$obj"
+# done
+#
+# lights.Description = "lighting information for this scene"
+# camera.Description = "where should the camera be put?"
+# action.Description = "what's going on?"
 
 # for obj in {lights,camera,action}; do
 #   "$obj".Env
 # done
-Objects.Env
+# Objects.Env
 
 echo
 echo "first user object, array & first element is: [$(MyUserObj.flags.Items.First)]"
