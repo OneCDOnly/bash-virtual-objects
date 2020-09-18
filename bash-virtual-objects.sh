@@ -64,7 +64,6 @@ Objects.Create()
             '$_placehold_enable_switch_'=true
             }
 
-
         '$public_function_name'.Env()
             {
             echo "* object internal environment *"
@@ -130,11 +129,6 @@ Objects.Create()
             echo "${#'$_placehold_list_array_'[@]}"
             }
 
-        '$public_function_name'.Items.Export()
-            {
-            printf "%s|" "${'$_placehold_list_array_'[@]}"
-            }
-
         '$public_function_name'.Items.First()
             {
             echo "${'$_placehold_list_array_'[0]}"
@@ -148,6 +142,19 @@ Objects.Create()
             fi
             }
 
+        '$public_function_name'.Items.GetCurrent()
+            {
+            echo -n "${'$_placehold_list_array_'[(('$_placehold_list_pointer_'-1))]}"
+            }
+
+        '$public_function_name'.Items.GetThis()
+            {
+            local -i index="$1"
+            [[ $index -lt 1 ]] && index=1
+            [[ $index -gt ${#'$_placehold_list_array_'[@]} ]] && index=${#'$_placehold_list_array_'[@]}
+            echo -n "${'$_placehold_list_array_'[((index-1))]}"
+            }
+
         '$public_function_name'.Items.Pointer()
             {
             if [[ -n $1 && $1 = "=" ]]; then
@@ -159,11 +166,6 @@ Objects.Create()
             else
                 echo -n $'$_placehold_list_pointer_'
             fi
-            }
-
-        '$public_function_name'.Items.Print()
-            {
-            echo -n "${'$_placehold_list_array_'[(('$_placehold_list_pointer_'-1))]}"
             }
 
         '$public_function_name'.Set()
@@ -247,33 +249,34 @@ MyUserObj.flags.Enable
 second.Description = 'this should be the 2nd user object created but the 3rd created overall'
 
 MyUserObj.flags.Env
-# echo
-# second.Env
-# echo
-# third.Env
-# echo
+echo
+second.Env
+echo
+third.Env
+echo
 
-# including an intentional duplicate object to check error works
-# for obj in {lights,camera,lights,action}; do
-#     Objects.Create "$obj"
-# done
-#
-# lights.Description = "lighting information for this scene"
-# camera.Description = "where should the camera be put?"
-# action.Description = "what's going on?"
+#including an intentional duplicate object to check error works
+for obj in {lights,camera,lights,action}; do
+    Objects.Create "$obj"
+done
 
-# for obj in {lights,camera,action}; do
-#   "$obj".Env
-# done
-# Objects.Env
+lights.Description = "lighting information for this scene"
+camera.Description = "where should the camera be put?"
+action.Description = "what's going on?"
+
+for obj in {lights,camera,action}; do
+  "$obj".Env
+done
+Objects.Env
 
 echo
 echo "first user object, array & first element is: [$(MyUserObj.flags.Items.First)]"
 echo "current object count is: $(Objects.Items.Count)"
-#
 
-echo "$(MyUserObj.flags.Items.Print)"
+
+echo "$(MyUserObj.flags.Items.GetCurrent)"
 MyUserObj.flags.Items.Enumerate
-echo "$(MyUserObj.flags.Items.Print)"
+echo "$(MyUserObj.flags.Items.GetCurrent)"
 MyUserObj.flags.Items.Enumerate
-echo "$(MyUserObj.flags.Items.Print)"
+echo "$(MyUserObj.flags.Items.GetCurrent)"
+echo "$(MyUserObj.flags.Items.GetThis 2)"
