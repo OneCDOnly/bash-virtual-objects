@@ -9,6 +9,10 @@
 #
 # So, blame OneCD if it all goes horribly wrong. ;)
 
+# Must work on at-least:
+#   GNU bash, version 3.2.57(2)-release (i686-pc-linux-gnu)
+#   Copyright (C) 2007 Free Software Foundation, Inc.
+
 Objects.Create()
     {
 
@@ -89,14 +93,14 @@ Objects.Create()
 
         '$public_function_name'.Init()
             {
-            declare -ig '$_placehold_index_'=$(Objects.Items.Count)
+            '$_placehold_index_'=$(Objects.Items.Count)
             '$_placehold_description_'=''
-            declare -ig '$_placehold_value_'=0
+            '$_placehold_value_'=0
             '$_placehold_text_'=''
             '$_placehold_set_switch_'=false
             '$_placehold_enable_switch_'=false
-            declare -ag '$_placehold_list_array_'+=()
-            declare -ig '$_placehold_list_pointer_'=1
+            '$_placehold_list_array_'+=()
+            '$_placehold_list_pointer_'=1
             }
 
         '$public_function_name'.IsDisabled()
