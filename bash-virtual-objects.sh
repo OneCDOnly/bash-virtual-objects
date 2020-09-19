@@ -24,17 +24,17 @@ Objects.Create()
     [[ $(type -t Objects.Index) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
 
     local public_function_name="$1"
-    local safe_var_name_prefix="${public_function_name//./_}"
-    local object_functions=''
+    local safe_var_name_prefix="$(tr '[A-Z]' '[a-z]' <<< "${public_function_name//./_}")"
+    local user_args=()
 
-    _placehold_index_="${safe_var_name_prefix}_index_integer"
-    _placehold_description_="${safe_var_name_prefix}_description_string"
-    _placehold_value_="${safe_var_name_prefix}_value_integer"
-    _placehold_text_="${safe_var_name_prefix}_text_string"
-    _placehold_set_switch_="${safe_var_name_prefix}_set_boolean"
-    _placehold_enable_switch_="${safe_var_name_prefix}_enable_boolean"
-    _placehold_list_array_="${safe_var_name_prefix}_list_array"
-    _placehold_list_pointer_="${safe_var_name_prefix}_array_index_integer"
+    _placehold_index_="_object_${safe_var_name_prefix}_index_integer"
+    _placehold_description_="_object_${safe_var_name_prefix}_description_string"
+    _placehold_value_="_object_${safe_var_name_prefix}_value_integer"
+    _placehold_text_="_object_${safe_var_name_prefix}_text_string"
+    _placehold_set_switch_="_object_${safe_var_name_prefix}_set_boolean"
+    _placehold_enable_switch_="_object_${safe_var_name_prefix}_enable_boolean"
+    _placehold_list_array_="_object_${safe_var_name_prefix}_list_array"
+    _placehold_list_pointer_="_object_${safe_var_name_prefix}_array_index_integer"
 
     if [[ $(type -t Objects.Index) = 'function' ]]; then
         Objects.Items.Add "$public_function_name"
@@ -43,7 +43,7 @@ Objects.Create()
     object_functions='
         '$public_function_name'.Clear()
             {
-            [[ '$_placehold_set_switch_' = false ]] && return
+            [[ '$_placehold_set_switch_' != true ]] && return
             '$_placehold_set_switch_'=false
             }
 
@@ -58,7 +58,7 @@ Objects.Create()
 
         '$public_function_name'.Disable()
             {
-            [[ '$_placehold_enable_switch_' = false ]] && return
+            [[ '$_placehold_enable_switch_' != true ]] && return
             '$_placehold_enable_switch_'=false
             }
 
@@ -105,17 +105,17 @@ Objects.Create()
 
         '$public_function_name'.IsDisabled()
             {
-            [[ $'$_placehold_enable_switch_' = true ]]
+            [[ $'$_placehold_enable_switch_' != true ]]
             }
 
         '$public_function_name'.IsEnabled()
             {
-            [[ $'$_placehold_enable_switch_' = false ]]
+            [[ $'$_placehold_enable_switch_' = true ]]
             }
 
         '$public_function_name'.IsNot()
             {
-            [[ $'$_placehold_set_switch_' = false ]]
+            [[ $'$_placehold_set_switch_' != true ]]
             }
 
         '$public_function_name'.IsSet()
