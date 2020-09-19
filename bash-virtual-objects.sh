@@ -40,13 +40,13 @@ Objects.Create()
     object_functions='
         '$public_function_name'.Clear()
             {
-            [[ '$_placehold_set_switch_' != true ]] && return
+            [[ $'$_placehold_set_switch_' != "true" ]] && return
             '$_placehold_set_switch_'=false
             }
 
         '$public_function_name'.Description()
             {
-            if [[ -n $1 && $1 = '=' ]]; then
+            if [[ -n $1 && $1 = "=" ]]; then
                 '$_placehold_description_'="$2"
             else
                 echo -n "'$_placehold_description_'"
@@ -55,13 +55,13 @@ Objects.Create()
 
         '$public_function_name'.Disable()
             {
-            [[ '$_placehold_enable_switch_' != true ]] && return
+            [[ $'$_placehold_enable_switch_' != "true" ]] && return
             '$_placehold_enable_switch_'=false
             }
 
         '$public_function_name'.Enable()
             {
-            [[ $'$_placehold_enable_switch_' = true ]] && return
+            [[ $'$_placehold_enable_switch_' = "true" ]] && return
             '$_placehold_enable_switch_'=true
             }
 
@@ -102,22 +102,22 @@ Objects.Create()
 
         '$public_function_name'.IsDisabled()
             {
-            [[ $'$_placehold_enable_switch_' != true ]]
+            [[ $'$_placehold_enable_switch_' != "true" ]]
             }
 
         '$public_function_name'.IsEnabled()
             {
-            [[ $'$_placehold_enable_switch_' = true ]]
+            [[ $'$_placehold_enable_switch_' = "true" ]]
             }
 
         '$public_function_name'.IsNot()
             {
-            [[ $'$_placehold_set_switch_' != true ]]
+            [[ $'$_placehold_set_switch_' != "true" ]]
             }
 
         '$public_function_name'.IsSet()
             {
-            [[ $'$_placehold_set_switch_' = true ]]
+            [[ $'$_placehold_set_switch_' = "true" ]]
             }
 
         '$public_function_name'.Items.Add()
@@ -171,7 +171,7 @@ Objects.Create()
 
         '$public_function_name'.Set()
             {
-            [[ $'$_placehold_set_switch_' = true ]] && return
+            [[ $'$_placehold_set_switch_' = "true" ]] && return
             '$_placehold_set_switch_'=true
             }
 
