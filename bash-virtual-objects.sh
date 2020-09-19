@@ -24,7 +24,7 @@ Objects.Create()
     [[ $(type -t Objects.Index) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
 
     local public_function_name="$1"
-    local safe_var_name_prefix="${public_function_name/./_}"
+    local safe_var_name_prefix="${public_function_name//./_}"
     local object_functions=''
 
     _placehold_index_="${safe_var_name_prefix}_index_integer"
