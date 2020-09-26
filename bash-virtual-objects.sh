@@ -13,15 +13,10 @@
 #   GNU bash, version 3.2.57(2)-release (i686-pc-linux-gnu)
 #   Copyright (C) 2007 Free Software Foundation, Inc.
 
-Objects.Create()
+Objects.Add()
     {
 
 	# $1: object name to create
-
-	if [[ $1 = init ]]; then
-		[[ -e $compiled_objects ]] && rm "$compiled_objects"
-		return
-	fi
 
     local public_function_name="$1"
     local safe_function_name="$(tr '[A-Z]' '[a-z]' <<< "${public_function_name//[.-]/_}")"
@@ -210,11 +205,34 @@ Objects.Create()
 		amount=1
 	fi
 	'$_placehold_value_'=$(('$_placehold_value_'+amount))
-	}' >> compiled.objects
+	}' >> $compiled_objects
 
     return 0
 
     }
+
+Objects.Construct()
+	{
+
+	compiled_objects=compiled.objects
+	reference_hash=9bf9184c5929c123d018e546edcf2e97
+
+	[[ -e $compiled_objects ]] && ! FileMatchesMD5 "$compiled_objects" "$reference_hash" && rm -f "$compiled_objects"
+
+	if [[ ! -e $compiled_objects ]]; then
+		echo "compiling objects ..."
+		Objects.Add MyUserObj.flags
+
+		for lop in {1..200}; do
+			Objects.Add "test-object-$lop"
+		done
+	fi
+
+	. compiled.objects
+
+	return 0
+
+	}
 
 DebugTimerStageStart()
     {
@@ -253,24 +271,9 @@ FileMatchesMD5()
 MD5SUM_CMD=/bin/md5sum
 CUT_CMD=/usr/bin/cut
 DATE_CMD=/usr/bin/date
-compiled_objects=compiled.objects
-reference_hash=9bf9184c5929c123d018e546edcf2e97
 starttime=$(DebugTimerStageStart)
 
-[[ -e $compiled_objects ]] && ! FileMatchesMD5 "$compiled_objects" "$reference_hash" && rm -f "$compiled_objects"
-
-if [[ ! -e $compiled_objects ]]; then
-	echo "compiling objects ..."
- 	Objects.Create init
-
-	Objects.Create MyUserObj.flags
-
-	for lop in {1..200}; do
-		Objects.Create "test-object-$lop"
-	done
-fi
-
-. compiled.objects
+Objects.Construct
 
 test-object-200.Text = 'sumthin'
 
