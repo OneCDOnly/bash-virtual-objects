@@ -16,225 +16,263 @@
 Objects.Create()
     {
 
-    if [[ $(type -t "$1.Index") = 'function' ]]; then
-        echo "unable to create new virtual object '$1': already exists" 1>&2
-        return 1
-    fi
+	# $1: object name to create
 
-    [[ $(type -t Objects.Index) != 'function' ]] && [[ -z $1 || $1 != Objects ]] && Objects.Create Objects
+	if [[ $1 = init ]]; then
+		[[ -e $compiled_objects ]] && rm "$compiled_objects"
+		return
+	fi
 
     local public_function_name="$1"
-    local safe_function_name="$(tr '[A-Z]' '[a-z]' <<< "${public_function_name//./_}")"
+    local safe_function_name="$(tr '[A-Z]' '[a-z]' <<< "${public_function_name//[.-]/_}")"
 
-    _placehold_index_="_object_${safe_function_name}_index_integer"
-    _placehold_description_="_object_${safe_function_name}_description_string"
-    _placehold_value_="_object_${safe_function_name}_value_integer"
-    _placehold_text_="_object_${safe_function_name}_text_string"
-    _placehold_set_switch_="_object_${safe_function_name}_set_boolean"
-    _placehold_enable_switch_="_object_${safe_function_name}_enable_boolean"
-    _placehold_list_array_="_object_${safe_function_name}_list_array"
-    _placehold_list_pointer_="_object_${safe_function_name}_array_index_integer"
+    _placehold_description_="_object_${safe_function_name}_description_"
+    _placehold_value_="_object_${safe_function_name}_value_"
+    _placehold_text_="_object_${safe_function_name}_text_"
+    _placehold_flag_="_object_${safe_function_name}_flag_"
+    _placehold_enable_="_object_${safe_function_name}_enable_"
+    _placehold_list_array_="_object_${safe_function_name}_list_"
+    _placehold_list_pointer_="_object_${safe_function_name}_list_pointer_"
+    _placehold_path_="_object_${safe_function_name}_path_"
 
-    [[ $(type -t Objects.Index) = 'function' ]] && Objects.Items.Add "$public_function_name"
+    echo $public_function_name'.Clear()
+	{
+	[[ $'$_placehold_flag_' != "true" ]] && return
+	'$_placehold_flag_'=false
+	}
 
-    object_functions='
-        '$public_function_name'.Clear()
-            {
-            [[ $'$_placehold_set_switch_' != "true" ]] && return
-            '$_placehold_set_switch_'=false
-            }
+'$public_function_name'.Description()
+	{
+	if [[ -n $1 && $1 = "=" ]]; then
+		'$_placehold_description_'="$2"
+	else
+		echo -n "'$_placehold_description_'"
+	fi
+	}
 
-        '$public_function_name'.Description()
-            {
-            if [[ -n $1 && $1 = "=" ]]; then
-                '$_placehold_description_'="$2"
-            else
-                echo -n "'$_placehold_description_'"
-            fi
-            }
+'$public_function_name'.Disable()
+	{
+	[[ $'$_placehold_enable_' != "true" ]] && return
+	'$_placehold_enable_'=false
+	}
 
-        '$public_function_name'.Disable()
-            {
-            [[ $'$_placehold_enable_switch_' != "true" ]] && return
-            '$_placehold_enable_switch_'=false
-            }
+'$public_function_name'.Enable()
+	{
+	[[ $'$_placehold_enable_' = "true" ]] && return
+	'$_placehold_enable_'=true
+	}
 
-        '$public_function_name'.Enable()
-            {
-            [[ $'$_placehold_enable_switch_' = "true" ]] && return
-            '$_placehold_enable_switch_'=true
-            }
+'$public_function_name'.Env()
+	{
+	echo "* object internal environment *"
+	echo "object name: '\'$public_function_name\''"
+	echo "object description: '\'\$$_placehold_description_\''"
+	echo "object value: '\'\$$_placehold_value_\''"
+	echo "object text: '\'\$$_placehold_text_\''"
+	echo "object flag: '\'\$$_placehold_flag_\''"
+	echo "object enable: '\'\$$_placehold_enable_\''"
+	echo "object list: '\'\${$_placehold_list_array_[*]}\''"
+	echo "object list pointer: '\'\$$_placehold_list_pointer_\''"
+	echo "object path: '\'\$$_placehold_path_\''"
+	}
 
-        '$public_function_name'.Env()
-            {
-            echo "* object internal environment *"
-            echo "object index: '\'\$$_placehold_index_\''"
-            echo "object name: '\'$public_function_name\''"
-            echo "object description: '\'\$$_placehold_description_\''"
-            echo "object value: '\'\$$_placehold_value_\''"
-            echo "object text: '\'\$$_placehold_text_\''"
-            echo "object set: '\'\$$_placehold_set_switch_\''"
-            echo "object enable: '\'\$$_placehold_enable_switch_\''"
-            echo "object list: '\'\${$_placehold_list_array_[*]}\''"
-            echo "object list pointer: '\'\$$_placehold_list_pointer_\''"
-            }
+'$public_function_name'.Init()
+	{
+	'$_placehold_description_'=''
+	'$_placehold_value_'=0
+	'$_placehold_text_'=''
+	'$_placehold_flag_'=false
+	'$_placehold_enable_'=false
+	'$_placehold_list_array_'+=()
+	'$_placehold_list_pointer_'=1
+	'$_placehold_path_'=''
+	}
 
-        '$public_function_name'.Index()
-            {
-            if [[ ${FUNCNAME[1]} = 'Objects.Create' ]]; then
-                '$_placehold_index_'=1
-            else
-                echo $'$_placehold_index_'
-            fi
-            }
+'$public_function_name'.IsDisabled()
+	{
+	[[ $'$_placehold_enable_' != "true" ]]
+	}
 
-        '$public_function_name'.Init()
-            {
-            '$_placehold_index_'=$(Objects.Items.Count)
-            '$_placehold_description_'=''
-            '$_placehold_value_'=0
-            '$_placehold_text_'=''
-            '$_placehold_set_switch_'=false
-            '$_placehold_enable_switch_'=false
-            '$_placehold_list_array_'+=()
-            '$_placehold_list_pointer_'=1
-            }
+'$public_function_name'.IsEnabled()
+	{
+	[[ $'$_placehold_enable_' = "true" ]]
+	}
 
-        '$public_function_name'.IsDisabled()
-            {
-            [[ $'$_placehold_enable_switch_' != "true" ]]
-            }
+'$public_function_name'.IsNot()
+	{
+	[[ $'$_placehold_flag_' != "true" ]]
+	}
 
-        '$public_function_name'.IsEnabled()
-            {
-            [[ $'$_placehold_enable_switch_' = "true" ]]
-            }
+'$public_function_name'.IsSet()
+	{
+	[[ $'$_placehold_flag_' = "true" ]]
+	}
 
-        '$public_function_name'.IsNot()
-            {
-            [[ $'$_placehold_set_switch_' != "true" ]]
-            }
+'$public_function_name'.Items.Add()
+	{
+	'$_placehold_list_array_'+=("$1")
+	}
 
-        '$public_function_name'.IsSet()
-            {
-            [[ $'$_placehold_set_switch_' = "true" ]]
-            }
+'$public_function_name'.Items.Count()
+	{
+	echo "${#'$_placehold_list_array_'[@]}"
+	}
 
-        '$public_function_name'.Items.Add()
-            {
-            '$_placehold_list_array_'+=("$1")
-            }
+'$public_function_name'.Items.First()
+	{
+	echo "${'$_placehold_list_array_'[0]}"
+	}
 
-        '$public_function_name'.Items.Count()
-            {
-            echo "${#'$_placehold_list_array_'[@]}"
-            }
+'$public_function_name'.Items.Enumerate()
+	{
+	(('$_placehold_list_pointer_'++))
+	if [[ $'$_placehold_list_pointer_' -gt ${#'$_placehold_list_array_'[@]} ]]; then
+		'$_placehold_list_pointer_'=1
+	fi
+	}
 
-        '$public_function_name'.Items.First()
-            {
-            echo "${'$_placehold_list_array_'[0]}"
-            }
+'$public_function_name'.Items.GetCurrent()
+	{
+	echo -n "${'$_placehold_list_array_'[(('$_placehold_list_pointer_'-1))]}"
+	}
 
-        '$public_function_name'.Items.Enumerate()
-            {
-            (('$_placehold_list_pointer_'++))
-            if [[ $'$_placehold_list_pointer_' -gt ${#'$_placehold_list_array_'[@]} ]]; then
-                '$_placehold_list_pointer_'=1
-            fi
-            }
+'$public_function_name'.Items.GetThis()
+	{
+	local -i index="$1"
+	[[ $index -lt 1 ]] && index=1
+	[[ $index -gt ${#'$_placehold_list_array_'[@]} ]] && index=${#'$_placehold_list_array_'[@]}
+	echo -n "${'$_placehold_list_array_'[((index-1))]}"
+	}
 
-        '$public_function_name'.Items.GetCurrent()
-            {
-            echo -n "${'$_placehold_list_array_'[(('$_placehold_list_pointer_'-1))]}"
-            }
+'$public_function_name'.Items.Pointer()
+	{
+	if [[ -n $1 && $1 = "=" ]]; then
+		if [[ $2 -gt ${#'$_placehold_list_array_'[@]} ]]; then
+			'$_placehold_list_pointer_'=${#'$_placehold_list_array_'[@]}
+		else
+			'$_placehold_list_pointer_'=$2
+		fi
+	else
+		echo -n $'$_placehold_list_pointer_'
+	fi
+	}
 
-        '$public_function_name'.Items.GetThis()
-            {
-            local -i index="$1"
-            [[ $index -lt 1 ]] && index=1
-            [[ $index -gt ${#'$_placehold_list_array_'[@]} ]] && index=${#'$_placehold_list_array_'[@]}
-            echo -n "${'$_placehold_list_array_'[((index-1))]}"
-            }
+'$public_function_name'.Path()
+	{
+	if [[ -n $1 && $1 = "=" ]]; then
+		'$_placehold_path_'="$2"
+	else
+		echo -n "$'$_placehold_path_'"
+	fi
+	}
 
-        '$public_function_name'.Items.Pointer()
-            {
-            if [[ -n $1 && $1 = "=" ]]; then
-                if [[ $2 -gt ${#'$_placehold_list_array_'[@]} ]]; then
-                    '$_placehold_list_pointer_'=${#'$_placehold_list_array_'[@]}
-                else
-                    '$_placehold_list_pointer_'=$2
-                fi
-            else
-                echo -n $'$_placehold_list_pointer_'
-            fi
-            }
+'$public_function_name'.Set()
+	{
+	[[ $'$_placehold_flag_' = "true" ]] && return
+	'$_placehold_flag_'=true
+	}
 
-        '$public_function_name'.Set()
-            {
-            [[ $'$_placehold_set_switch_' = "true" ]] && return
-            '$_placehold_set_switch_'=true
-            }
+'$public_function_name'.Text()
+	{
+	if [[ -n $1 && $1 = "=" ]]; then
+		'$_placehold_text_'="$2"
+	else
+		echo -n "$'$_placehold_text_'"
+	fi
+	}
 
-        '$public_function_name'.Text()
-            {
-            if [[ -n $1 && $1 = "=" ]]; then
-                '$_placehold_text_'="$2"
-            else
-                echo -n "$'$_placehold_text_'"
-            fi
-            }
+'$public_function_name'.Value()
+	{
+	if [[ -n $1 && $1 = "=" ]]; then
+		'$_placehold_value_'=$2
+	else
+		echo -n $'$_placehold_value_'
+	fi
+	}
 
-        '$public_function_name'.Value()
-            {
-            if [[ -n $1 && $1 = "=" ]]; then
-                '$_placehold_value_'=$2
-            else
-                echo -n $'$_placehold_value_'
-            fi
-            }
+'$public_function_name'.Value.Decrement()
+	{
+	local -i amount
+	if [[ -n $1 && $1 = "by" ]]; then
+		amount=$2
+	else
+		amount=1
+	fi
+	'$_placehold_value_'=$(('$_placehold_value_'-amount))
+	}
 
-        '$public_function_name'.Value.Decrement()
-            {
-            local -i amount
-            if [[ -n $1 && $1 = "by" ]]; then
-                amount=$2
-            else
-                amount=1
-            fi
-            '$_placehold_value_'=$(('$_placehold_value_'-amount))
-            }
-
-        '$public_function_name'.Value.Increment()
-            {
-            local -i amount
-            if [[ -n $1 && $1 = "by" ]]; then
-                amount=$2
-            else
-                amount=1
-            fi
-            '$_placehold_value_'=$(('$_placehold_value_'+amount))
-            }
-    '
-    eval "$object_functions"
-
-    $public_function_name.Init
-
-    if [[ $public_function_name = Objects ]]; then
-        $public_function_name.Index
-        $public_function_name.Description = 'this object holds metadata on every other object'
-        $public_function_name.Value = 1
-        $public_function_name.Items.Add 'Objects'
-    fi
+'$public_function_name'.Value.Increment()
+	{
+	local -i amount
+	if [[ -n $1 && $1 = "by" ]]; then
+		amount=$2
+	else
+		amount=1
+	fi
+	'$_placehold_value_'=$(('$_placehold_value_'+amount))
+	}' >> compiled.objects
 
     return 0
 
     }
 
-# a few test commands to check operation
+DebugTimerStageStart()
+    {
 
-Objects.Create MyUserObj.flags
-Objects.Create second
-Objects.Create third
+    # output:
+    #   stdout = current time in seconds
+
+    $DATE_CMD +%s%N
+
+    }
+
+DebugTimerStageEnd()
+    {
+
+    # input:
+    #   $1 = start time in seconds
+
+    echo "elapsed time: $((($($DATE_CMD +%s%N) - $1)/1000000)) milliseconds" # using this method: https://stackoverflow.com/a/16961051/14072675
+
+
+    }
+
+FileMatchesMD5()
+    {
+
+    # input:
+    #   $1 = pathfilename to generate an MD5 checksum for
+    #   $2 = MD5 checksum to compare against
+
+    [[ -z $1 || -z $2 ]] && return 1
+
+    [[ $($MD5SUM_CMD "$1" | $CUT_CMD -f1 -d' ') = "$2" ]]
+
+    }
+
+MD5SUM_CMD=/bin/md5sum
+CUT_CMD=/usr/bin/cut
+DATE_CMD=/usr/bin/date
+compiled_objects=compiled.objects
+reference_hash=9bf9184c5929c123d018e546edcf2e97
+starttime=$(DebugTimerStageStart)
+
+[[ -e $compiled_objects ]] && ! FileMatchesMD5 "$compiled_objects" "$reference_hash" && rm -f "$compiled_objects"
+
+if [[ ! -e $compiled_objects ]]; then
+	echo "compiling objects ..."
+ 	Objects.Create init
+
+	Objects.Create MyUserObj.flags
+
+	for lop in {1..200}; do
+		Objects.Create "test-object-$lop"
+	done
+fi
+
+. compiled.objects
+
+test-object-200.Text = 'sumthin'
 
 MyUserObj.flags.Set
 MyUserObj.flags.Value = 10
@@ -247,37 +285,9 @@ MyUserObj.flags.Items.Add 'this is the first element in the array'
 MyUserObj.flags.Items.Add 'and this is the second element in the array'
 MyUserObj.flags.Items.Add 'finally this is the third element in the array'
 MyUserObj.flags.Enable
-second.Description = 'this should be the 2nd user object created but the 3rd created overall'
+
+test-object-200.Env
 
 MyUserObj.flags.Env
-echo
-second.Env
-echo
-third.Env
-echo
 
-#including an intentional duplicate object to check error works
-for obj in {lights,camera,lights,action}; do
-    Objects.Create "$obj"
-done
-
-lights.Description = "lighting information for this scene"
-camera.Description = "where should the camera be put?"
-action.Description = "what's going on?"
-
-for obj in {lights,camera,action}; do
-  "$obj".Env
-done
-Objects.Env
-
-echo
-echo "first user object, array & first element is: [$(MyUserObj.flags.Items.First)]"
-echo "current object count is: $(Objects.Items.Count)"
-
-
-echo "$(MyUserObj.flags.Items.GetCurrent)"
-MyUserObj.flags.Items.Enumerate
-echo "$(MyUserObj.flags.Items.GetCurrent)"
-MyUserObj.flags.Items.Enumerate
-echo "$(MyUserObj.flags.Items.GetCurrent)"
-echo "$(MyUserObj.flags.Items.GetThis 2)"
+DebugTimerStageEnd "$starttime"
